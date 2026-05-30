@@ -1,0 +1,1841 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rocket Mongolia</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --yellow:  #F2BE38;
+    --yd:      #D9A620;
+    --blue:    #8DCDE6;
+    --orange:  #D4825A;
+    --od:      #BB6840;
+    --dark:    #1B1A2E;
+    --green:   #2A6B52;
+    --white:   #FFFFFF;
+    --bg:      #F5F1E8;
+    --f: 'Nunito', system-ui, sans-serif;
+  }
+
+  html { scroll-behavior: smooth; overflow-x: hidden; }
+  body { background: var(--bg); color: var(--dark); font-family: var(--f); -webkit-font-smoothing: antialiased; }
+  img  { display: block; max-width: 100%; }
+  button { font-family: var(--f); cursor: pointer; }
+
+  /* ── NAV ── */
+  nav {
+    background: var(--dark); height: 64px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 36px; position: sticky; top: 0; z-index: 90;
+  }
+  /* ── LOGO ── */
+  .logo {
+    font-size: 1.46rem; font-weight: 900;
+    color: #FBC926;
+    text-decoration: none; letter-spacing: .018em;
+    display: flex; align-items: center; gap: 11px;
+    /* Crisp rendering */
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    /* Subtle depth shadow so text pops on dark nav */
+    text-shadow: 0 1px 3px rgba(0,0,0,.35);
+    transition: color .4s cubic-bezier(.4,0,.2,1),
+                text-shadow .4s cubic-bezier(.4,0,.2,1);
+  }
+  .logo:hover {
+    color: #FFD84E;
+    text-shadow: 0 1px 3px rgba(0,0,0,.35), 0 0 16px rgba(255,216,78,.18);
+  }
+
+  /* Icon wrapper — isolation keeps mix-blend-mode contained to yellow circle,
+     preventing it from bleeding into the dark nav background */
+  .logo-img-wrap {
+    position: relative; flex-shrink: 0;
+    width: 40px; height: 40px;
+    background: #FBC926;
+    border-radius: 50%;
+    padding: 6px;
+    isolation: isolate;          /* ← Key fix */
+    overflow: hidden;
+    box-shadow:
+      0 0 0 1.5px rgba(251,201,38,.35),   /* gold ring */
+      0 2px 8px  rgba(0,0,0,.28),          /* depth */
+      inset 0 1px 0 rgba(255,255,255,.22); /* inner highlight */
+    transition: box-shadow .4s cubic-bezier(.4,0,.2,1),
+                transform   .45s cubic-bezier(.4,0,.2,1);
+  }
+  .logo:hover .logo-img-wrap {
+    box-shadow:
+      0 0 0 1.5px rgba(255,216,78,.55),
+      0 4px 16px  rgba(0,0,0,.3),
+      0 0 14px    rgba(251,201,38,.22),
+      inset 0 1px 0 rgba(255,255,255,.25);
+    transform: translateY(-1px);
+  }
+
+  .logo-img {
+    width: 100%; height: 100%;
+    object-fit: contain; display: block;
+    /* Blends with the yellow wrapper only (isolation: isolate above) */
+    mix-blend-mode: multiply;
+    transition: filter .4s cubic-bezier(.4,0,.2,1);
+  }
+  .logo:hover .logo-img { filter: brightness(1.04); }
+
+  /* Pseudo elements — clean, no shine sweep */
+  .logo-img-wrap::before,
+  .logo-img-wrap::after { display: none; }
+
+  /* ── NAV LINKS ── */
+  .nav-links { display: flex; gap: 2px; list-style: none; }
+  .nav-links a {
+    position: relative;
+    color: rgba(255,255,255,.48);
+    text-decoration: none; font-size: .78rem; font-weight: 700;
+    letter-spacing: .07em; padding: 7px 13px; border-radius: 8px;
+    /* All transitions at once, ultra-smooth */
+    transition:
+      color       .4s  cubic-bezier(.4,0,.2,1),
+      background  .4s  cubic-bezier(.4,0,.2,1),
+      transform   .4s  cubic-bezier(.4,0,.2,1);
+  }
+  /* Soft border — pure opacity fade, no movement */
+  .nav-links a::before {
+    content: '';
+    position: absolute; inset: 0; border-radius: 8px;
+    border: 1px solid rgba(238,200,66,.28);
+    /* Blur the border very subtly with box-shadow */
+    box-shadow: 0 0 0 1px rgba(238,200,66,.06);
+    opacity: 0;
+    transition: opacity .4s cubic-bezier(.4,0,.2,1);
+    pointer-events: none;
+  }
+  .nav-links a:hover::before  { opacity: 1; }
+  .nav-links a:hover {
+    color: rgba(238,200,66,.92);
+    background: rgba(238,200,66,.055);
+    transform: scale(1.015);
+  }
+  .nav-links a:active {
+    transform: scale(.99);
+    transition-duration: .12s;
+    color: rgba(238,200,66,.7);
+  }
+
+  /* ── CART BUTTON ── */
+  .cart-btn {
+    display: flex; align-items: center; gap: 8px;
+    background: #EEC842; color: var(--dark); border: none;
+    padding: 10px 20px; border-radius: 100px;
+    font-size: .78rem; font-weight: 900; letter-spacing: .04em;
+    transition:
+      background  .4s cubic-bezier(.4,0,.2,1),
+      transform   .4s cubic-bezier(.4,0,.2,1),
+      box-shadow  .4s cubic-bezier(.4,0,.2,1);
+    box-shadow: 0 2px 10px rgba(238,200,66,.18);
+  }
+  .cart-btn:hover {
+    background: #F5D360;
+    transform: scale(1.02);
+    box-shadow: 0 4px 18px rgba(238,200,66,.28), 0 2px 8px rgba(0,0,0,.15);
+  }
+  .cart-btn:active { transform: scale(.99); transition-duration: .12s; }
+  .badge { background: var(--dark); color: var(--yellow); border-radius: 50%; width: 18px; height: 18px; font-size: .58rem; display: flex; align-items: center; justify-content: center; font-weight: 900; }
+  .badge.off { display: none; }
+
+  /* ── COMING SOON CARD ── */
+  .prod-card.coming-soon { cursor: default; }
+  .prod-card.coming-soon:hover { transform: none; }
+  .prod-card.coming-soon .pc-img-box img { filter: grayscale(.5); opacity: .55; }
+  .prod-card.coming-soon .pc-overlay { display: none; }
+  .soon-overlay {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(28,26,46,.08);
+  }
+  .soon-pill {
+    background: var(--dark); color: var(--white);
+    padding: 10px 22px; border-radius: 100px;
+    font-size: .78rem; font-weight: 900; letter-spacing: .14em; text-transform: uppercase;
+  }
+  .pc-add:disabled { background: rgba(28,26,46,.18); cursor: not-allowed; transform: none !important; }
+
+  /* ── BENTO WRAPPER ── */
+  .page { max-width: 1280px; margin: 0 auto; padding: 20px 20px 0; }
+
+  /* ── HERO GRID ── */
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.45fr 1fr;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  /* BIG YELLOW HERO CARD */
+  .hero-card {
+    background: var(--yellow);
+    border-radius: 36px;
+    padding: 44px 44px 36px;
+    position: relative;
+    overflow: hidden;
+    min-height: 500px;
+    display: flex; flex-direction: column; justify-content: flex-start; gap: 0;
+  }
+
+  .hero-title {
+    font-size: clamp(2.8rem, 4.6vw, 4.4rem);
+    font-weight: 900; line-height: 1.06;
+    color: var(--white);
+    position: relative; z-index: 1;
+    letter-spacing: -.03em;
+    pointer-events: none;
+    max-width: 54%;
+  }
+
+  /* Product image — full-height portrait card */
+  .hero-img-wrap {
+    position: absolute;
+    right: 40px;
+    top: 44px;
+    bottom: 44px;
+    width: 40%;
+    border-radius: 20px;
+    overflow: hidden;
+    z-index: 2;
+    box-shadow:
+      0 32px 72px rgba(0,0,0,.2),
+      0 12px 28px rgba(0,0,0,.12),
+      0 3px 8px rgba(0,0,0,.07);
+  }
+  .hero-img-wrap::after {
+    content: '';
+    position: absolute; inset: 0;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,.22);
+    pointer-events: none; z-index: 3;
+  }
+  .hero-img {
+    width: 100%; height: 100%;
+    object-fit: cover; display: block;
+  }
+
+  .price-badge { display: none; }
+  .pb-from, .pb-price { display: none; }
+
+  .sparkle { display: none; }
+
+  /* Hero product description */
+  .hero-desc {
+    max-width: 54%;
+    margin-top: 18px;
+    display: flex; flex-direction: column; gap: 0;
+    position: relative; z-index: 1;
+  }
+  .hero-desc-name {
+    font-size: clamp(.8rem, 1.1vw, .95rem);
+    font-weight: 800; color: rgba(255,255,255,1);
+    letter-spacing: -.01em; margin-bottom: 4px;
+  }
+  .hero-desc-tagline {
+    font-size: clamp(.7rem, .9vw, .8rem);
+    font-weight: 600; color: rgba(255,255,255,.88);
+    line-height: 1.55; margin-bottom: 12px;
+  }
+  .hero-bullets {
+    display: flex; flex-direction: column; gap: 4px;
+    padding-left: 0;
+  }
+  .hero-bullet {
+    font-size: clamp(.62rem, .82vw, .72rem);
+    font-weight: 600; color: rgba(255,255,255,.82);
+    line-height: 1.5;
+    display: flex; align-items: flex-start; gap: 0;
+  }
+
+  .hero-bottom {
+    position: relative; z-index: 3;
+    max-width: 54%;
+    margin-top: auto;
+    padding-top: 16px;
+  }
+  .hero-tagline {
+    font-size: .72rem; font-weight: 600;
+    color: rgba(255,255,255,.58);
+    line-height: 1.6; letter-spacing: .01em;
+  }
+  .rating-block, .thumbs, .thumb,
+  .rating-num, .rating-star { display: none; }
+
+  /* RIGHT COLUMN */
+  .right-col { display: flex; flex-direction: column; gap: 12px; }
+
+  /* BLUE / DINO BEAR CARD */
+  .blue-card {
+    background: var(--blue);
+    border-radius: 36px; padding: 28px 30px;
+    position: relative; overflow: hidden;
+    flex: 1.5; min-height: 240px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    gap: 12px;
+  }
+  .bc-top { display: flex; flex-direction: column; gap: 6px; padding-right: 90px; }
+  .bc-title {
+    font-size: clamp(1.6rem, 2.6vw, 2.4rem);
+    font-weight: 900; color: var(--dark);
+    line-height: 1.05; letter-spacing: -.03em;
+  }
+  .bc-sub {
+    font-size: .7rem; font-weight: 700;
+    color: rgba(28,26,46,.45); letter-spacing: .06em; text-transform: uppercase;
+  }
+  .bc-desc {
+    font-size: .73rem; font-weight: 500;
+    color: rgba(28,26,46,.7); line-height: 1.65;
+    padding-right: 80px;
+  }
+  .bc-badge {
+    position: absolute; top: 22px; right: 22px;
+    background: var(--dark); color: var(--yellow);
+    border-radius: 100px; padding: 5px 12px;
+    font-size: .56rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase;
+    transform: rotate(8deg);
+  }
+  .bc-img {
+    position: absolute; bottom: 0; right: 14px;
+    width: 88px; height: 108px;
+    object-fit: cover; object-position: center top;
+    border-radius: 14px 14px 0 0;
+    box-shadow: -4px 0 16px rgba(0,0,0,.1);
+  }
+  .bc-footer { display: flex; align-items: center; gap: 10px; }
+  .explore-btn {
+    background: var(--dark); color: var(--white); border: none;
+    border-radius: 100px; padding: 10px 20px;
+    font-size: .7rem; font-weight: 800; letter-spacing: .05em;
+    transition: background .2s, transform .15s; white-space: nowrap;
+  }
+  .explore-btn:hover { background: #2e2a4a; transform: scale(1.04); }
+  .follow-note {
+    font-size: .65rem; font-weight: 600;
+    color: rgba(28,26,46,.45); line-height: 1.4;
+  }
+
+  /* ORANGE / SALE CARD */
+  .orange-card {
+    background: var(--orange);
+    border-radius: 36px; padding: 28px 30px;
+    position: relative; overflow: hidden;
+    flex: 1; min-height: 180px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .sale-off-badge {
+    position: absolute; top: 20px; right: 20px;
+    background: var(--white); color: var(--orange);
+    border-radius: 100px; padding: 5px 13px;
+    font-size: .7rem; font-weight: 900; letter-spacing: .06em;
+  }
+  .oc-prices { display: flex; flex-direction: column; gap: 2px; }
+  .oc-original {
+    font-size: .88rem; font-weight: 700;
+    color: rgba(255,255,255,.5);
+    text-decoration: line-through;
+    text-decoration-color: rgba(255,255,255,.6);
+  }
+  .oc-sale-price {
+    font-size: clamp(1.8rem, 2.8vw, 2.6rem);
+    font-weight: 900; color: var(--white);
+    line-height: 1.05; letter-spacing: -.03em;
+  }
+  .oc-bottom { display: flex; align-items: flex-end; justify-content: space-between; }
+  .oc-sub    { font-size: .72rem; font-weight: 600; color: rgba(255,255,255,.55); line-height: 1.5; }
+  .oc-price  {
+    background: var(--white); color: var(--orange);
+    border-radius: 100px; padding: 9px 20px;
+    font-size: .78rem; font-weight: 900;
+    cursor: pointer; transition: transform .15s; white-space: nowrap;
+  }
+  .oc-price:hover { transform: scale(1.04); }
+  /* hide old elements */
+  .oc-pct, .oc-title, .oc-img { display: none; }
+
+  /* ── DARK PICKS SECTION ── */
+  .picks-wrap {
+    background: var(--dark); border-radius: 36px;
+    padding: 48px 52px; margin-bottom: 14px;
+  }
+  .picks-head {
+    display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 32px;
+  }
+  .picks-title {
+    font-size: clamp(2rem, 3.5vw, 3rem);
+    font-weight: 900; color: var(--white); line-height: 1.1; letter-spacing: -.02em;
+  }
+  .picks-title em { color: var(--yellow); font-style: normal; }
+  .picks-note { font-size: .8rem; font-weight: 600; color: rgba(255,255,255,.3); max-width: 200px; line-height: 1.6; text-align: right; margin-top: 8px; }
+
+  .pick-row {
+    display: grid; grid-template-columns: 62px 1fr auto 42px;
+    gap: 18px; align-items: center;
+    padding: 14px 16px; border-radius: 16px;
+    cursor: pointer; transition: background .2s;
+  }
+  .pick-row:hover { background: rgba(255,255,255,.06); }
+  .pick-row + .pick-row { border-top: 1px solid rgba(255,255,255,.06); }
+  .pick-img { width: 62px; height: 62px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,.1); }
+  .pick-name { font-size: .97rem; font-weight: 800; color: var(--white); margin-bottom: 3px; }
+  .pick-desc { font-size: .76rem; font-weight: 600; color: rgba(255,255,255,.38); }
+  .pick-price { font-size: .93rem; font-weight: 900; color: var(--yellow); white-space: nowrap; }
+  .pick-add {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--yellow); color: var(--dark); border: none;
+    font-size: 1.4rem; font-weight: 700; display: flex; align-items: center; justify-content: center;
+    transition: transform .15s, background .2s;
+  }
+  .pick-add:hover { transform: scale(1.12); background: var(--yd); }
+
+  /* ── PRODUCTS CARDS ── */
+  .products-head { display: flex; align-items: center; gap: 16px; margin-bottom: 14px; }
+  .products-heading { font-size: clamp(1.6rem, 2.8vw, 2.2rem); font-weight: 900; color: var(--dark); }
+  .ph-line { flex: 1; height: 3px; background: var(--yellow); border-radius: 3px; }
+
+  /* align-items: start → expanding card does NOT stretch neighbours */
+  .prod-grid {
+    display: grid; grid-template-columns: repeat(3,1fr);
+    gap: 14px; margin-bottom: 20px;
+    align-items: start;
+  }
+
+  .prod-card {
+    border-radius: 28px;
+    /* overflow: visible so variant panel can expand freely */
+    overflow: visible;
+    cursor: pointer;
+    position: relative;
+    /* transition only transform — height changes via inner content */
+    transition: transform .32s cubic-bezier(.4,0,.2,1),
+                box-shadow .32s cubic-bezier(.4,0,.2,1);
+  }
+  /* Clip background & border-radius visually via pseudo-element */
+  .prod-card::before {
+    content: '';
+    position: absolute; inset: 0;
+    border-radius: 28px;
+    background: inherit;
+    z-index: 0; pointer-events: none;
+  }
+  .prod-card > * { position: relative; z-index: 1; }
+
+  /* Hover lift — disabled when variant panel is open */
+  .prod-card:not(.var-open):hover { transform: translateY(-6px); }
+  .prod-card.var-open            { transform: none !important; }
+
+  .prod-card:nth-child(1) { background: #EDE1CE; }
+  .prod-card:nth-child(2) { background: #D4EEF7; }
+  .prod-card:nth-child(3) { background: #EAD8ED; }
+
+  /* Image box: own rounded top corners since card overflow is now visible */
+  .pc-img-box {
+    position: relative; overflow: hidden; height: 240px;
+    border-radius: 28px 28px 0 0;
+  }
+  .pc-img-box img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s; }
+  .prod-card:hover .pc-img-box img { transform: scale(1.07); }
+  .pc-overlay {
+    position: absolute; inset: 0; background: rgba(0,0,0,.2);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity .25s;
+  }
+  .prod-card:hover .pc-overlay { opacity: 1; }
+  .pc-view {
+    background: var(--white); color: var(--dark); border: none;
+    border-radius: 100px; padding: 10px 22px;
+    font-size: .74rem; font-weight: 800; letter-spacing: .06em;
+    transform: translateY(8px); transition: transform .3s;
+  }
+  .prod-card:hover .pc-view { transform: translateY(0); }
+  .pc-tag {
+    position: absolute; top: 14px; left: 14px;
+    background: var(--dark); color: var(--white);
+    border-radius: 100px; padding: 5px 12px;
+    font-size: .62rem; font-weight: 800; letter-spacing: .08em;
+  }
+
+  .pc-info { padding: 18px 22px 22px; }
+  .pc-name  { font-size: 1.08rem; font-weight: 900; color: var(--dark); margin-bottom: 4px; }
+  .pc-short { font-size: .76rem; font-weight: 600; color: rgba(28,26,46,.48); margin-bottom: 14px; }
+  .pc-bottom { display: flex; align-items: center; justify-content: space-between; }
+  .pc-price  { font-size: .98rem; font-weight: 900; color: var(--orange); }
+  .pc-add {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--dark); color: var(--white); border: none;
+    font-size: 1.3rem; display: flex; align-items: center; justify-content: center;
+    transition: transform .15s, background .2s;
+  }
+  .pc-add:hover { transform: scale(1.12); background: var(--orange); }
+
+  /* ── MODAL ── */
+  .modal-veil {
+    position: fixed; inset: 0; background: rgba(28,26,46,.78);
+    z-index: 200; display: flex; align-items: center; justify-content: center; padding: 24px;
+    opacity: 0; pointer-events: none; transition: opacity .3s;
+  }
+  .modal-veil.on { opacity: 1; pointer-events: all; }
+
+  .modal-shell {
+    background: var(--white); max-width: 860px; width: 100%;
+    border-radius: 24px;
+    display: grid; grid-template-columns: 1fr 1.1fr;
+    max-height: 90vh; overflow: hidden; position: relative;
+    transform: scale(.95) translateY(16px);
+    transition: transform .4s cubic-bezier(.16,1,.3,1);
+  }
+  .modal-veil.on .modal-shell { transform: scale(1) translateY(0); }
+
+  .modal-img-side { overflow: hidden; background: #eee; }
+  .modal-img-side img { width: 100%; height: 100%; object-fit: cover; min-height: 420px; }
+
+  .modal-body { padding: 44px 36px; overflow-y: auto; display: flex; flex-direction: column; }
+  .modal-close {
+    position: absolute; top: 14px; right: 14px; z-index: 10;
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--dark); color: var(--white); border: none;
+    font-size: 1.05rem; display: flex; align-items: center; justify-content: center;
+    transition: background .2s;
+  }
+  .modal-close:hover { background: var(--orange); }
+
+  .m-tag   { font-size: .62rem; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; color: var(--orange); margin-bottom: 8px; }
+  .m-name  { font-size: 1.95rem; font-weight: 900; line-height: 1.1; margin-bottom: 12px; }
+  .m-price { font-size: 1.45rem; font-weight: 900; color: var(--orange); margin-bottom: 24px; }
+  .m-hr    { height: 1px; background: rgba(0,0,0,.08); margin-bottom: 20px; }
+  .m-desc  { font-size: .87rem; font-weight: 600; color: rgba(28,26,46,.55); line-height: 1.85; flex: 1; margin-bottom: 24px; }
+  .m-feats { list-style: none; margin-bottom: 28px; }
+  .m-feats li {
+    font-size: .8rem; font-weight: 700; color: var(--dark);
+    padding: 9px 0; border-bottom: 1px solid rgba(0,0,0,.06);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .m-feats li::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--yellow); flex-shrink: 0; }
+
+  .btn-add-modal {
+    width: 100%; padding: 16px; border-radius: 14px;
+    background: var(--dark); color: var(--white); border: none;
+    font-size: .8rem; font-weight: 900; letter-spacing: .12em; text-transform: uppercase;
+    transition: background .2s, transform .1s;
+  }
+  .btn-add-modal:hover { background: var(--orange); transform: scale(1.01); }
+
+  /* ── CART PANEL ── */
+  .panel-veil { position: fixed; inset: 0; background: rgba(0,0,0,.3); z-index: 296; opacity: 0; pointer-events: none; transition: opacity .3s; }
+  .panel-veil.on { opacity: 1; pointer-events: all; }
+
+  .cart-panel {
+    position: fixed; top: 0; right: -440px; width: 420px; height: 100vh;
+    background: var(--white); z-index: 297;
+    display: flex; flex-direction: column;
+    box-shadow: -8px 0 48px rgba(0,0,0,.12);
+    transition: right .38s cubic-bezier(.16,1,.3,1);
+  }
+  .cart-panel.open { right: 0; }
+
+  .cart-head {
+    padding: 26px 32px; background: var(--dark);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .cart-title { font-size: 1.25rem; font-weight: 900; color: var(--yellow); }
+  .cart-close-btn {
+    background: rgba(255,255,255,.1); border: none; color: var(--white);
+    width: 32px; height: 32px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-size: 1rem;
+    transition: background .2s;
+  }
+  .cart-close-btn:hover { background: rgba(255,255,255,.22); }
+
+  .cart-body { flex: 1; overflow-y: auto; padding: 20px 32px; }
+  .cart-empty { text-align: center; padding: 64px 0; color: rgba(28,26,46,.28); font-size: .9rem; font-weight: 700; }
+  .cart-empty span { display: block; font-size: 2.5rem; margin-bottom: 10px; }
+
+  .cart-item {
+    display: grid; grid-template-columns: 64px 1fr 28px;
+    gap: 14px; align-items: start; padding: 16px 0;
+    border-bottom: 1px solid rgba(0,0,0,.07);
+  }
+  .ci-img { width: 64px; height: 64px; border-radius: 14px; object-fit: cover; }
+  .ci-name  { font-size: .93rem; font-weight: 800; color: var(--dark); margin-bottom: 3px; }
+  .ci-price { font-size: .78rem; font-weight: 700; color: var(--orange); }
+  .qty-row  { display: flex; align-items: center; gap: 9px; margin-top: 8px; }
+  .qbtn { width: 26px; height: 26px; border-radius: 50%; background: var(--bg); border: none; font-size: .9rem; font-weight: 700; color: var(--dark); display: flex; align-items: center; justify-content: center; transition: background .2s; }
+  .qbtn:hover { background: var(--yellow); }
+  .qnum { font-size: .83rem; font-weight: 800; min-width: 20px; text-align: center; }
+  .ci-del { background: none; border: none; color: rgba(28,26,46,.28); font-size: .9rem; padding: 2px; transition: color .2s; }
+  .ci-del:hover { color: var(--orange); }
+
+  .cart-foot { padding: 20px 32px 32px; border-top: 1px solid rgba(0,0,0,.07); display: none; }
+  .total-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .total-lbl { font-size: .72rem; font-weight: 800; color: rgba(28,26,46,.42); letter-spacing: .1em; text-transform: uppercase; }
+  .total-sum { font-size: 1.4rem; font-weight: 900; color: var(--dark); }
+  .checkout-btn {
+    width: 100%; padding: 16px; border-radius: 14px;
+    background: var(--yellow); color: var(--dark); border: none;
+    font-size: .8rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase;
+    transition: background .2s, transform .1s;
+  }
+  .checkout-btn:hover { background: var(--yd); transform: scale(1.01); }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 28px; right: 28px;
+    background: var(--dark); color: var(--white);
+    padding: 13px 20px; border-radius: 14px;
+    font-size: .8rem; font-weight: 700;
+    z-index: 500; display: flex; align-items: center; gap: 10px;
+    transform: translateY(14px) scale(.95); opacity: 0; pointer-events: none;
+    transition: all .3s cubic-bezier(.16,1,.3,1);
+  }
+  .toast.on { transform: translateY(0) scale(1); opacity: 1; }
+  .toast-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--yellow); flex-shrink: 0; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--dark); border-radius: 28px;
+    padding: 52px 48px 36px; margin-bottom: 20px;
+  }
+  .footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 56px; margin-bottom: 44px; }
+  .f-logo { font-size: 1.9rem; font-weight: 900; color: var(--yellow); margin-bottom: 12px; }
+  .f-tag  { font-size: .82rem; font-weight: 600; color: rgba(255,255,255,.32); line-height: 1.8; max-width: 260px; }
+  .f-col-title { font-size: .62rem; font-weight: 800; letter-spacing: .22em; text-transform: uppercase; color: rgba(255,255,255,.22); margin-bottom: 20px; }
+  .f-nav { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .f-nav a { color: rgba(255,255,255,.5); text-decoration: none; font-size: .85rem; font-weight: 700; transition: color .2s; }
+  .f-nav a:hover { color: var(--yellow); }
+  .ct-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; }
+  .ct-icon { opacity: .3; font-size: .82rem; margin-top: 3px; }
+  .ct-txt  { font-size: .82rem; font-weight: 600; color: rgba(255,255,255,.45); line-height: 1.6; }
+
+  /* Instagram link */
+  .ig-link {
+    display: inline-flex; align-items: center; gap: 10px;
+    margin-top: 6px;
+    padding: 9px 14px;
+    border-radius: 12px;
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.08);
+    text-decoration: none;
+    color: rgba(255,255,255,.55);
+    font-size: .8rem; font-weight: 700;
+    transition:
+      color      .35s cubic-bezier(.4,0,.2,1),
+      background .35s cubic-bezier(.4,0,.2,1),
+      border-color .35s cubic-bezier(.4,0,.2,1),
+      transform  .35s cubic-bezier(.4,0,.2,1),
+      box-shadow .35s cubic-bezier(.4,0,.2,1);
+    will-change: transform;
+  }
+  .ig-link:hover {
+    color: #F5C842;
+    background: rgba(245,200,66,.08);
+    border-color: rgba(245,200,66,.22);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,.2), 0 0 12px rgba(245,200,66,.1);
+  }
+  .ig-icon {
+    width: 28px; height: 28px; flex-shrink: 0;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    display: flex; align-items: center; justify-content: center;
+    transition: filter .35s ease, transform .35s cubic-bezier(.4,0,.2,1);
+  }
+  .ig-link:hover .ig-icon {
+    filter: brightness(1.1) saturate(1.1);
+    transform: scale(1.06);
+  }
+  .ig-icon svg { width: 15px; height: 15px; fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .footer-bot { padding-top: 28px; border-top: 1px solid rgba(255,255,255,.06); display: flex; justify-content: space-between; align-items: center; }
+  .f-copy { font-size: .7rem; font-weight: 700; color: rgba(255,255,255,.18); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    nav { padding: 0 20px; }
+    .nav-links { display: none; }
+    .hero-grid { grid-template-columns: 1fr; }
+    .hero-card { min-height: 400px; }
+    .hero-img-wrap { width: 45%; right: 24px; top: 32px; bottom: 32px; }
+    .right-col { flex-direction: row; }
+    .blue-card, .orange-card { flex: 1; }
+    .prod-grid { grid-template-columns: 1fr 1fr; align-items: start; }
+    .footer-top { grid-template-columns: 1fr 1fr; gap: 32px; }
+    .footer-bot { flex-direction: column; gap: 8px; text-align: center; }
+    .picks-wrap { padding: 36px 28px; }
+  }
+  @media (max-width: 600px) {
+    .right-col { flex-direction: column; }
+    .prod-grid { grid-template-columns: 1fr; }
+    .modal-shell { grid-template-columns: 1fr; }
+    .modal-img-side img { min-height: 220px; max-height: 240px; }
+    .modal-body { padding: 32px 24px; }
+    .cart-panel { width: 100%; right: -100%; }
+    .footer-top { grid-template-columns: 1fr; gap: 32px; }
+    .picks-title { font-size: 2.6rem; }
+    footer { padding: 40px 24px 28px; margin-bottom: 14px; }
+    .page { padding: 12px 12px 0; }
+    .hero-img-wrap { width: 50%; right: 16px; top: 24px; bottom: 24px; }
+    .hero-title { max-width: 46%; font-size: 2.2rem; }
+    .hero-bottom { max-width: 46%; }
+  }
+
+  /* ══════════════════════════════════════
+     VARIANT SYSTEM
+  ══════════════════════════════════════ */
+  .pc-toggle-btn {
+    display: flex; align-items: center; gap: 5px;
+    background: var(--dark); color: var(--white); border: none;
+    border-radius: 100px; padding: 8px 15px;
+    font-family: var(--f); font-size: .68rem; font-weight: 800;
+    letter-spacing: .04em; cursor: pointer; white-space: nowrap;
+    transition: background .25s cubic-bezier(.4,0,.2,1),
+                transform  .22s cubic-bezier(.4,0,.2,1);
+  }
+  .pc-toggle-btn .arr {
+    display: inline-block; font-style: normal;
+    transition: transform .32s cubic-bezier(.4,0,.2,1);
+    line-height: 1; font-size: .7rem;
+  }
+  .pc-toggle-btn.open-v .arr { transform: rotate(180deg); }
+  .pc-toggle-btn.open-v { background: rgba(28,26,46,.18); color: var(--dark); }
+  .pc-toggle-btn:hover:not(.open-v) { background: var(--orange); transform: scale(1.02); }
+
+  /* Expandable section */
+  .pc-vars-wrap {
+    overflow: hidden;
+    max-height: 0; opacity: 0; margin-top: 0;
+    transition:
+      max-height .42s cubic-bezier(.4,0,.2,1),
+      opacity    .3s  cubic-bezier(.4,0,.2,1),
+      margin-top .42s cubic-bezier(.4,0,.2,1);
+  }
+  .pc-vars-wrap.open { max-height: 500px; opacity: 1; margin-top: 12px; }
+
+  .pc-vars-inner {
+    border-radius: 14px;
+    border: 1px solid rgba(0,0,0,.09);
+    background: rgba(255,255,255,.58);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    padding: 13px 14px;
+  }
+
+  .vars-label {
+    font-size: .57rem; font-weight: 800; letter-spacing: .18em;
+    text-transform: uppercase; color: rgba(28,26,46,.36); margin-bottom: 9px;
+  }
+
+  .vars-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 11px; }
+
+  .var-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 11px; border-radius: 10px;
+    border: 1.5px solid transparent;
+    background: rgba(255,255,255,.55);
+    cursor: pointer;
+    transition: all .22s cubic-bezier(.4,0,.2,1);
+  }
+  .var-item:hover {
+    background: rgba(255,255,255,.88);
+    border-color: rgba(238,200,66,.3);
+    transform: translateX(3px);
+  }
+  .var-item.sel {
+    background: rgba(255,255,255,.95);
+    border-color: #EEC842;
+    box-shadow: 0 0 0 3px rgba(238,200,66,.13),
+                0 2px 8px rgba(0,0,0,.07);
+  }
+
+  .var-dot {
+    width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
+    border: 1.5px solid rgba(0,0,0,.1);
+    box-shadow: inset 0 1px 2px rgba(255,255,255,.6);
+  }
+  .var-name { font-size: .78rem; font-weight: 700; color: var(--dark); }
+
+  .var-add-btn {
+    width: 100%; padding: 11px; border: none; border-radius: 10px;
+    font-family: var(--f); font-size: .72rem; font-weight: 800; letter-spacing: .05em;
+    background: rgba(28,26,46,.15); color: rgba(28,26,46,.35);
+    cursor: not-allowed; pointer-events: none;
+    transition: all .25s cubic-bezier(.4,0,.2,1);
+  }
+  .var-add-btn.ready {
+    background: var(--dark); color: var(--white);
+    cursor: pointer; pointer-events: all; opacity: 1;
+  }
+  .var-add-btn.ready:hover { background: var(--orange); transform: scale(1.01); }
+
+  /* ── QUANTITY SELECTOR ── */
+  .qty-sel {
+    overflow: hidden;
+    max-height: 0; opacity: 0; margin: 0;
+    transition:
+      max-height .35s cubic-bezier(.4,0,.2,1),
+      opacity    .28s cubic-bezier(.4,0,.2,1),
+      margin     .35s cubic-bezier(.4,0,.2,1);
+  }
+  .qty-sel.show { max-height: 120px; opacity: 1; margin: 10px 0; }
+
+  .qty-ctrl-box {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    background: rgba(255,255,255,.5);
+    border: 1px solid rgba(0,0,0,.07);
+    border-radius: 12px; padding: 8px 12px;
+  }
+
+  .qty-ctrl-row { display: flex; align-items: center; gap: 4px; }
+
+  .qbtn {
+    width: 30px; height: 30px; border-radius: 50%;
+    border: 1.5px solid rgba(28,26,46,.12);
+    background: rgba(255,255,255,.85);
+    color: var(--dark); font-size: 1.05rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; line-height: 1;
+    transition: background .2s, border-color .2s, transform .15s, box-shadow .2s;
+  }
+  .qbtn:hover {
+    background: var(--dark); color: var(--white);
+    border-color: var(--dark);
+    box-shadow: 0 2px 8px rgba(28,26,46,.2);
+  }
+  .qbtn:active { transform: scale(.88); }
+
+  .qnum {
+    min-width: 32px; text-align: center;
+    font-size: .95rem; font-weight: 900; color: var(--dark);
+    user-select: none;
+  }
+  .qnum.bump { animation: qbump .22s cubic-bezier(.16,1,.3,1); }
+  @keyframes qbump {
+    0%   { transform: scale(1.4); opacity: .5; }
+    100% { transform: scale(1);   opacity: 1; }
+  }
+
+  .qty-subtotal {
+    font-size: .72rem; font-weight: 600;
+    color: rgba(28,26,46,.45); text-align: right;
+    transition: color .2s;
+  }
+  .qty-subtotal strong { color: var(--dark); font-weight: 900; font-size: .8rem; }
+
+  /* ══════════════════════════════════════
+     CHECKOUT MODAL
+  ══════════════════════════════════════ */
+  .co-veil {
+    position: fixed; inset: 0;
+    background: rgba(10,8,20,.75);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    z-index: 500;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+    opacity: 0; pointer-events: none;
+    transition: opacity .35s;
+  }
+  .co-veil.on { opacity: 1; pointer-events: all; }
+
+  .co-modal {
+    background: #16152a;
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 28px;
+    width: 100%; max-width: 560px;
+    max-height: 92vh; overflow-y: auto;
+    position: relative;
+    transform: translateY(36px) scale(.96);
+    transition: transform .42s cubic-bezier(.16,1,.3,1);
+    box-shadow: 0 48px 96px rgba(0,0,0,.5), 0 12px 32px rgba(0,0,0,.3);
+    scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.1) transparent;
+  }
+  .co-veil.on .co-modal { transform: translateY(0) scale(1); }
+
+  .co-head {
+    padding: 24px 28px 18px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid rgba(255,255,255,.07);
+    position: sticky; top: 0; background: #16152a;
+    border-radius: 28px 28px 0 0; z-index: 2;
+  }
+  .co-head-title { font-size: 1.1rem; font-weight: 900; color: var(--yellow); letter-spacing: -.01em; }
+  .co-x {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: rgba(255,255,255,.07); border: none;
+    color: rgba(255,255,255,.55); font-size: .9rem;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: background .2s, color .2s;
+  }
+  .co-x:hover { background: rgba(255,255,255,.14); color: var(--white); }
+
+  .co-body { padding: 22px 28px 28px; }
+
+  /* Summary */
+  .co-summary-box {
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 16px; padding: 14px 18px; margin-bottom: 20px;
+  }
+  .co-sec-label {
+    font-size: .62rem; font-weight: 800; letter-spacing: .18em;
+    text-transform: uppercase; color: rgba(255,255,255,.32); margin-bottom: 12px;
+  }
+  .co-ci {
+    display: grid; grid-template-columns: 40px 1fr auto auto;
+    gap: 10px; align-items: center;
+    padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,.05);
+  }
+  .co-ci:last-child { border-bottom: none; padding-bottom: 0; }
+  .co-ci-img { width: 40px; height: 40px; border-radius: 9px; object-fit: cover; }
+  .co-ci-name { font-size: .78rem; font-weight: 700; color: var(--white); }
+  .co-ci-qty { font-size: .7rem; color: rgba(255,255,255,.35); white-space: nowrap; }
+  .co-ci-price { font-size: .8rem; font-weight: 800; color: var(--yellow); white-space: nowrap; }
+
+  /* Form */
+  .co-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .co-grid1 { display: grid; grid-template-columns: 1fr; gap: 10px; }
+  .co-field { display: flex; flex-direction: column; gap: 5px; }
+  .co-lbl {
+    font-size: .62rem; font-weight: 700; letter-spacing: .1em;
+    color: rgba(255,255,255,.42); text-transform: uppercase;
+  }
+  .co-inp, .co-sel, .co-txt {
+    background: rgba(255,255,255,.05);
+    border: 1.5px solid rgba(255,255,255,.09);
+    border-radius: 12px; padding: 11px 14px;
+    color: var(--white); font-family: var(--f);
+    font-size: .82rem; font-weight: 500; outline: none; width: 100%;
+    transition: border-color .2s, background .2s;
+  }
+  .co-inp::placeholder, .co-txt::placeholder { color: rgba(255,255,255,.2); }
+  .co-inp:focus, .co-sel:focus, .co-txt:focus {
+    border-color: var(--yellow); background: rgba(255,255,255,.08);
+  }
+  .co-sel {
+    cursor: pointer; appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(255,255,255,0.4)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 14px center;
+    padding-right: 36px;
+  }
+  .co-sel option { background: #16152a; color: var(--white); }
+  .co-txt { resize: none; height: 72px; line-height: 1.55; }
+
+  .co-err { font-size: .62rem; color: #ff7070; font-weight: 600; display: none; margin-top: 2px; }
+  .co-field.err .co-inp, .co-field.err .co-sel { border-color: #ff7070; }
+  .co-field.err .co-err { display: block; }
+
+  /* Radio buttons */
+  .co-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .co-chip {
+    flex: 1; min-width: 90px;
+    padding: 10px 12px; border-radius: 12px;
+    border: 1.5px solid rgba(255,255,255,.09);
+    background: rgba(255,255,255,.04);
+    color: rgba(255,255,255,.5); font-size: .75rem; font-weight: 700;
+    cursor: pointer; text-align: center; line-height: 1.4;
+    transition: all .2s; user-select: none;
+  }
+  .co-chip.on { border-color: var(--yellow); background: rgba(242,190,56,.1); color: var(--yellow); }
+  .co-chip:hover:not(.on) { background: rgba(255,255,255,.08); color: rgba(255,255,255,.75); }
+  .co-chip small { display: block; font-size: .62rem; font-weight: 500; opacity: .7; margin-top: 2px; }
+
+  /* Divider */
+  .co-divider { height: 1px; background: rgba(255,255,255,.07); margin: 18px 0; }
+
+  /* Total */
+  .co-total-box {
+    background: rgba(242,190,56,.07);
+    border: 1px solid rgba(242,190,56,.18);
+    border-radius: 14px; padding: 14px 18px;
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 18px;
+  }
+  .co-total-left p:first-child { font-size: .68rem; font-weight: 700; color: rgba(255,255,255,.45); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 3px; }
+  .co-delivery-note { font-size: .68rem; color: rgba(255,255,255,.3); font-weight: 500; }
+  .co-total-price { font-size: 1.55rem; font-weight: 900; color: var(--yellow); letter-spacing: -.02em; }
+
+  /* Confirm */
+  .co-confirm {
+    width: 100%; padding: 15px; margin-top: 14px;
+    background: var(--yellow); color: var(--dark); border: none;
+    border-radius: 14px; font-family: var(--f);
+    font-size: .82rem; font-weight: 900; letter-spacing: .06em;
+    cursor: pointer; transition: background .2s, transform .12s;
+  }
+  .co-confirm:hover { background: var(--yd); transform: scale(1.01); }
+  .co-confirm:active { transform: scale(.99); }
+
+  /* Success screen */
+  .co-success {
+    display: none; flex-direction: column; align-items: center;
+    justify-content: center; padding: 52px 32px; text-align: center; min-height: 420px;
+  }
+  .co-success.on { display: flex; }
+  .co-form-wrap.gone { display: none; }
+
+  .suc-rocket { font-size: 4.5rem; line-height: 1; margin-bottom: 22px; animation: sucRocket .9s cubic-bezier(.16,1,.3,1) both; }
+  @keyframes sucRocket { from { transform: translateY(24px) scale(.7); opacity: 0; } to { transform: none; opacity: 1; } }
+  .suc-title { font-size: 1.6rem; font-weight: 900; color: var(--yellow); margin-bottom: 8px; animation: sucFade .6s .18s both; }
+  .suc-sub { font-size: .85rem; color: rgba(255,255,255,.55); font-weight: 500; line-height: 1.65; animation: sucFade .6s .32s both; }
+  .suc-num {
+    background: rgba(242,190,56,.09); border: 1px solid rgba(242,190,56,.2);
+    border-radius: 12px; padding: 13px 22px; margin-top: 20px;
+    font-size: .8rem; font-weight: 700; color: var(--yellow); line-height: 1.6;
+    animation: sucFade .6s .46s both;
+  }
+  .suc-close {
+    margin-top: 22px; padding: 12px 30px;
+    background: rgba(255,255,255,.07); color: rgba(255,255,255,.7);
+    border: none; border-radius: 100px;
+    font-family: var(--f); font-size: .76rem; font-weight: 800;
+    cursor: pointer; transition: background .2s; animation: sucFade .6s .6s both;
+  }
+  .suc-close:hover { background: rgba(255,255,255,.13); color: var(--white); }
+  @keyframes sucFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+  @media (max-width: 600px) {
+    .co-grid2 { grid-template-columns: 1fr; }
+    .co-modal { border-radius: 20px; }
+    .co-body { padding: 18px 20px 24px; }
+    .co-head { padding: 20px 20px 16px; }
+  }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="logo" href="#top">
+    <div class="logo-img-wrap">
+      <img class="logo-img" src="logo.png" alt="Rocket Mongolia logo">
+    </div>
+    Rocket Mongolia
+  </a>
+  <ul class="nav-links">
+    <li><a href="#picks">Онцлох бараа</a></li>
+    <li><a href="#products">Бүх бараа</a></li>
+    <li><a href="#contact">Холбоо</a></li>
+  </ul>
+  <button class="cart-btn" onclick="toggleCart()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+      <line x1="3" y1="6" x2="21" y2="6"/>
+      <path d="M16 10a4 4 0 01-8 0"/>
+    </svg>
+    Сагс
+    <span class="badge off" id="badge">0</span>
+  </button>
+</nav>
+
+<!-- BENTO HERO -->
+<div class="page" id="top">
+  <div class="hero-grid">
+
+    <!-- BIG YELLOW HERO -->
+    <div class="hero-card">
+      <span class="sparkle" style="top:30px;right:46%;font-size:1.4rem;">✦</span>
+      <span class="sparkle" style="top:52px;right:41%;font-size:.75rem;">✦</span>
+      <span class="sparkle" style="bottom:110px;left:36px;font-size:1rem;">✦</span>
+      <span class="sparkle" style="top:180px;left:44px;font-size:.6rem;">●</span>
+
+      <div class="hero-title">ОНЦГОЙ<br>БЭЛЭГ</div>
+
+      <div class="hero-desc">
+        <p class="hero-desc-name">🌌 Solar System Moonlight Lamp 🌙✨</p>
+        <p class="hero-desc-tagline">Өрөөг чинь илүү aesthetic, dreamy болгох<br>хамгийн гоё гэрэл 💫</p>
+        <div class="hero-bullets">
+          <span class="hero-bullet">🪐 Нарны аймгийн 3D crystal design</span>
+          <span class="hero-bullet">✨ Асаахад од эрхэс шиг гялалзсан эффекттэй</span>
+          <span class="hero-bullet">🤍 Шөнийн гэрэл, room decor, бэлгэнд төгс тохирно</span>
+          <span class="hero-bullet">🎁 Cute + luxury мэдрэмжтэй item</span>
+          <span class="hero-bullet">📸 Зурагнаасаа ч илүү гоё харагддаг</span>
+          <span class="hero-bullet">🌙 Night light + decoration хоёрыг хослуулсан</span>
+        </div>
+      </div>
+
+
+      <div class="hero-img-wrap">
+        <img class="hero-img" src="moonlight.jpg" alt="Moonlight">
+      </div>
+
+      <div class="hero-bottom">
+        <p class="hero-tagline">Rocket Mongolia — онцгой бэлгийн дэлгүүр</p>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="right-col">
+
+      <!-- DINO BEAR CARD -->
+      <div class="blue-card">
+        <div class="bc-badge">🚀 ROCKET</div>
+        <div class="bc-top">
+          <div class="bc-title">DINO BEAR 🧸</div>
+          <p class="bc-sub">TikTok · Pinterest · Trend</p>
+        </div>
+        <p class="bc-desc">
+          🦖💚 TikTok, Pinterest дээр тренд болоод байгаа Dino bear!<br>
+          Зөөлөн plush материалтай + супер cute 🤍<br>
+          🎁 Төрсөн өдөр, anniversary, surprise gift-д perfect<br>
+          ✨ Girlfriend / bestie / дүүдээ өгөхөд бүр гоё
+        </p>
+        <img class="bc-img" src="dinza-bear.jpg" alt="Dino Bear">
+        <div class="bc-footer">
+          <button class="explore-btn" onclick="openModal(2)">Дэлгэрэнгүй →</button>
+          <span class="follow-note">Follow хийгээд<br>50% хямдруулаарай</span>
+        </div>
+      </div>
+
+      <!-- SALE CARD -->
+      <div class="orange-card">
+        <span class="sale-off-badge">20% OFF</span>
+        <div class="oc-prices">
+          <span class="oc-original">45,000₮</span>
+          <span class="oc-sale-price">35,000₮</span>
+        </div>
+        <div class="oc-bottom">
+          <p class="oc-sub">Онцгой хямдрал<br>хязгаарлагдмал хугацаанд</p>
+          <span class="oc-price" onclick="document.getElementById('picks').scrollIntoView({behavior:'smooth'})">Үзэх →</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- DARK PICKS SECTION -->
+  <div class="picks-wrap" id="picks">
+    <div class="picks-head">
+      <div class="picks-title">ОНЦЛОХ <em>БАРАА</em></div>
+      <p class="picks-note">Баталгаат чанартай, бэлэглэхэд тохиромжтой шилдэг бараанууд</p>
+    </div>
+    <div id="picksList"></div>
+  </div>
+
+  <!-- PRODUCT CARDS -->
+  <div id="products">
+    <div class="products-head">
+      <h2 class="products-heading">Бүх бараа</h2>
+      <div class="ph-line"></div>
+    </div>
+    <div class="prod-grid" id="grid"></div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer id="contact">
+    <div class="footer-top">
+      <div>
+        <p class="f-logo" style="display:flex;align-items:center;gap:12px;">
+        <img src="logo.png" alt="" style="width:44px;height:44px;object-fit:contain;border-radius:50%;background:var(--yellow);padding:7px;mix-blend-mode:multiply;">
+        Rocket Mongolia
+      </p>
+        <p class="f-tag">Баталгаат чанартай, тайвшрал өгдөг, бэлэглэхэд тохиромжтой бүтээгдэхүүнүүд. Таны хайртай хүмүүст онцгой бэлэг.</p>
+      </div>
+      <div>
+        <p class="f-col-title">Холбоос</p>
+        <ul class="f-nav">
+          <li><a href="#top">Нүүр хуудас</a></li>
+          <li><a href="#picks">Онцлох бараа</a></li>
+          <li><a href="#products">Бүх бараа</a></li>
+          <li><a href="#contact">Холбоо барих</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="f-col-title">Холбоо барих</p>
+        <div class="ct-row"><span class="ct-icon">📍</span><span class="ct-txt">Улаанбаатар хот,<br>Сүхбаатар дүүрэг</span></div>
+        <div class="ct-row"><span class="ct-icon">📞</span><span class="ct-txt">+976 9970 6443</span></div>
+        <a class="ig-link" href="https://www.instagram.com/rocket_mongolia/" target="_blank" rel="noopener">
+          <span class="ig-icon">
+            <svg viewBox="0 0 24 24">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+              <circle cx="12" cy="12" r="4.5"/>
+              <circle cx="17.5" cy="6.5" r="1.2" fill="#fff" stroke="none"/>
+            </svg>
+          </span>
+          @rocket_mongolia
+        </a>
+      </div>
+    </div>
+    <div class="footer-bot">
+      <p class="f-copy">© 2024 Rocket Mongolia. Бүх эрх хуулиар хамгаалагдсан.</p>
+      <p class="f-copy">Монголоор хийгдсэн ♡</p>
+    </div>
+  </footer>
+</div>
+
+<!-- MODAL -->
+<div class="modal-veil" id="veil" onclick="veilClick(event)">
+  <div class="modal-shell">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-img-side"><img id="mImg" src="" alt=""></div>
+    <div class="modal-body">
+      <p class="m-tag"  id="mTag"></p>
+      <h2 class="m-name" id="mName"></h2>
+      <p class="m-price" id="mPrice"></p>
+      <div class="m-hr"></div>
+      <p class="m-desc"  id="mDesc"></p>
+      <ul class="m-feats" id="mFeats"></ul>
+      <button class="btn-add-modal" id="mBtn">Сагсанд нэмэх →</button>
+    </div>
+  </div>
+</div>
+
+<!-- CART -->
+<div class="panel-veil" id="panelVeil" onclick="toggleCart()"></div>
+<div class="cart-panel" id="cartPanel">
+  <div class="cart-head">
+    <h2 class="cart-title">Сагс 🚀</h2>
+    <button class="cart-close-btn" onclick="toggleCart()">✕</button>
+  </div>
+  <div class="cart-body" id="cartBody">
+    <p class="cart-empty"><span>🛍</span>Сагс хоосон байна</p>
+  </div>
+  <div class="cart-foot" id="cartFoot">
+    <div class="total-row">
+      <span class="total-lbl">Нийт дүн</span>
+      <span class="total-sum" id="cartSum">0₮</span>
+    </div>
+    <button class="checkout-btn" onclick="openCheckout()">Захиалга хийх →</button>
+  </div>
+</div>
+
+<!-- CHECKOUT MODAL -->
+<div class="co-veil" id="coVeil" onclick="coVeilClick(event)">
+  <div class="co-modal" id="coModal">
+
+    <div class="co-head">
+      <h2 class="co-head-title">🛒 Захиалга хийх</h2>
+      <button class="co-x" onclick="closeCheckout()">✕</button>
+    </div>
+
+    <div class="co-body">
+
+      <!-- FORM -->
+      <div class="co-form-wrap" id="coFormWrap">
+
+        <p class="co-sec-label">Захиалсан бараа</p>
+        <div class="co-summary-box" id="coSummary"></div>
+
+        <p class="co-sec-label" style="margin-top:18px">Хэрэглэгчийн мэдээлэл</p>
+        <div class="co-grid2" style="gap:10px">
+          <div class="co-field" id="fn-name">
+            <label class="co-lbl">Нэр *</label>
+            <input class="co-inp" id="co-name" type="text" placeholder="Таны нэр">
+            <span class="co-err">Нэр оруулна уу</span>
+          </div>
+          <div class="co-field" id="fn-phone">
+            <label class="co-lbl">Утасны дугаар *</label>
+            <input class="co-inp" id="co-phone" type="tel" placeholder="9999-9999" maxlength="9">
+            <span class="co-err">Утасны дугаар оруулна уу</span>
+          </div>
+        </div>
+
+        <div class="co-grid2" style="gap:10px;margin-top:10px">
+          <div class="co-field" id="fn-district">
+            <label class="co-lbl">Дүүрэг *</label>
+            <select class="co-sel" id="co-district">
+              <option value="">Дүүрэг сонгох</option>
+              <option>Сүхбаатар дүүрэг</option>
+              <option>Чингэлтэй дүүрэг</option>
+              <option>Баянзүрх дүүрэг</option>
+              <option>Хан-Уул дүүрэг</option>
+              <option>Сонгинохайрхан дүүрэг</option>
+              <option>Баян-Өнжүүл дүүрэг</option>
+              <option>Налайх дүүрэг</option>
+              <option>Багануур дүүрэг</option>
+              <option>Орон нутаг</option>
+            </select>
+            <span class="co-err">Дүүрэг сонгоно уу</span>
+          </div>
+          <div class="co-field" id="fn-address">
+            <label class="co-lbl">Хаяг *</label>
+            <input class="co-inp" id="co-address" type="text" placeholder="Байр, тоот, гудамж">
+            <span class="co-err">Хаяг оруулна уу</span>
+          </div>
+        </div>
+
+        <div class="co-grid1" style="margin-top:10px">
+          <div class="co-field">
+            <label class="co-lbl">Нэмэлт тайлбар <span style="opacity:.5">(заавал биш)</span></label>
+            <textarea class="co-txt" id="co-note" placeholder="Хаягийн нэмэлт мэдээлэл..."></textarea>
+          </div>
+        </div>
+
+        <div class="co-divider"></div>
+
+        <p class="co-sec-label">Хүргэлтийн төрөл</p>
+        <div class="co-chips" id="g-delivery">
+          <div class="co-chip on" data-v="city" onclick="coChip(this,'g-delivery','delivery')">
+            🏙️ Хот дотор<small>+5,000₮</small>
+          </div>
+          <div class="co-chip" data-v="regional" onclick="coChip(this,'g-delivery','delivery')">
+            🚚 Орон нутаг<small>Тохиролцооны дагуу</small>
+          </div>
+        </div>
+
+        <p class="co-sec-label" style="margin-top:16px">Төлбөрийн хэлбэр</p>
+        <div class="co-chips" id="g-payment">
+          <div class="co-chip on" data-v="qpay" onclick="coChip(this,'g-payment','payment')">📱 QPay</div>
+          <div class="co-chip" data-v="cash"  onclick="coChip(this,'g-payment','payment')">💵 Бэлнээр</div>
+          <div class="co-chip" data-v="bank"  onclick="coChip(this,'g-payment','payment')">🏦 Дансаар</div>
+        </div>
+
+        <div class="co-total-box">
+          <div class="co-total-left">
+            <p>Нийт дүн</p>
+            <p class="co-delivery-note" id="coDelivNote"></p>
+          </div>
+          <p class="co-total-price" id="coTotalPrice">0₮</p>
+        </div>
+
+        <button class="co-confirm" onclick="confirmOrder()">Захиалга баталгаажуулах 🚀</button>
+
+      </div>
+
+      <!-- SUCCESS -->
+      <div class="co-success" id="coSuccess">
+        <div class="suc-rocket">🚀</div>
+        <h2 class="suc-title">Амжилттай захиалагдлаа!</h2>
+        <p class="suc-sub">Таны захиалгыг хүлээн авлаа.<br>Удахгүй манай баг холбогдох болно 🤍</p>
+        <div class="suc-num" id="sucNum"></div>
+        <button class="suc-close" onclick="closeCheckout()">Нүүр хуудас руу буцах →</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <div class="toast-dot"></div>
+  <span id="toastMsg"></span>
+</div>
+
+<script>
+/* ── PRODUCTS DATA ── */
+const products = [
+  {
+    id: 1, name: 'Moonlight',
+    short: 'Тайвшрал өгдөг · Бэлэглэхэд тохиромжтой', tag: 'Онцлох бараа', price: 35000,
+    img: 'moonlight.jpg',
+    desc: 'Moonlight — тайвшрал өгдөг, баталгаат чанартай онцгой бүтээгдэхүүн. Хайртай хүнд бэлэглэхэд хамгийн тохиромжтой, дулаан мэдрэмж авчрах сайхан сонголт.',
+    feats: ['Баталгаат чанартай','Бэлэглэхэд тохиромжтой','Тайвшрал өгдөг','Онцгой дизайн','Гар аргаар хийгдсэн'],
+    variants: [
+      { vid: 'ml-gold',   label: '🌕 Gold Moonlight', color: '#F5C842' },
+      { vid: 'ml-solar',  label: '🌌 Solar System',   color: '#7BB8EA' },
+      { vid: 'ml-saturn', label: '✨ Saturn',           color: '#C4A8E8' }
+    ]
+  },
+  {
+    id: 2, name: 'Dinza Bear 🧸',
+    short: 'TikTok · Pinterest · Trend 2024', tag: 'Бэлэг', price: 35000, originalPrice: 45000,
+    img: 'dinza-bear.jpg',
+    desc: '🦖💚 TikTok, Pinterest дээр тренд болоод байгаа Dino bear! Зөөлөн plush материалтай + супер cute 🤍\n🎁 Төрсөн өдөр, anniversary, surprise gift-д perfect choice! ✨ Girlfriend / bestie / дүүдээ өгөхөд бүр гоё.',
+    feats: ['🦖 Дино дизайн — super cute','🤍 Зөөлөн plush материал','🎁 Бэлэглэхэд perfect choice','✨ Girlfriend / bestie / дүүдэд','📦 Gift box-той хамт'],
+    variants: [
+      { vid: 'db-green', label: '🦖 Green Dino', color: '#A8D8A0' },
+      { vid: 'db-pink',  label: '💗 Pink Dino',  color: '#F4B8CC' }
+    ]
+  },
+  {
+    id: 3, name: 'Coming Soon',
+    short: 'Удахгүй нэмэгдэх шинэ бараа', tag: 'Удахгүй', price: null,
+    img: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=900&q=85',
+    desc: 'Удахгүй гарах шинэ бүтээгдэхүүн. Мэдэгдэл авахын тулд биднийг дагаарай.',
+    feats: [], comingSoon: true, variants: []
+  }
+];
+
+let cart = [];
+const $ = id => document.getElementById(id);
+const fmt = n => n.toLocaleString('mn-MN') + '₮';
+
+/* ── VARIANT STATE ── */
+let openVarId    = null;
+const pickedVar  = {};     // { productId: vid }
+const varQty     = {};     // { productId: quantity }
+
+/* ── PICKS LIST ── */
+function renderPicks() {
+  $('picksList').innerHTML = products
+    .filter(p => !p.comingSoon)
+    .map(p => `
+      <div class="pick-row" onclick="openModal(${p.id})">
+        <img class="pick-img" src="${p.img}" alt="${p.name}">
+        <div>
+          <p class="pick-name">${p.name}</p>
+          <p class="pick-desc">${p.short}</p>
+        </div>
+        <p class="pick-price">${fmt(p.price)}<br>
+          <span style="font-size:.65rem;opacity:.5;font-weight:600;">тус бүр</span></p>
+        <button class="pick-add" onclick="event.stopPropagation(); openModal(${p.id})">+</button>
+      </div>
+    `).join('');
+}
+
+/* ── PRODUCT GRID ── */
+function renderGrid() {
+  $('grid').innerHTML = products.map(p => {
+    /* Coming Soon */
+    if (p.comingSoon) return `
+      <div class="prod-card coming-soon">
+        <div class="pc-img-box">
+          <img src="${p.img}" alt="${p.name}" loading="lazy">
+          <span class="pc-tag">${p.tag}</span>
+          <div class="soon-overlay"><span class="soon-pill">Удахгүй...</span></div>
+        </div>
+        <div class="pc-info">
+          <p class="pc-name" style="opacity:.45">${p.name}</p>
+          <p class="pc-short">${p.short}</p>
+          <div class="pc-bottom">
+            <span class="pc-price" style="color:var(--dark);opacity:.3">—</span>
+            <button class="pc-add" disabled>+</button>
+          </div>
+        </div>
+      </div>`;
+
+    const hasVars = p.variants && p.variants.length > 0;
+    const priceHTML = p.originalPrice
+      ? `<div style="display:flex;flex-direction:column;gap:1px">
+           <span style="font-size:.68rem;color:rgba(28,26,46,.38);text-decoration:line-through;font-weight:600;">${fmt(p.originalPrice)}</span>
+           <span class="pc-price">${fmt(p.price)}</span>
+         </div>`
+      : `<span class="pc-price">${fmt(p.price)}</span>`;
+
+    const varHTML = hasVars ? `
+      <div class="pc-vars-wrap" id="vars-${p.id}" onclick="event.stopPropagation()">
+        <div class="pc-vars-inner">
+          <p class="vars-label">Төрөл сонгох</p>
+          <div class="vars-list">
+            ${p.variants.map(v => `
+              <div class="var-item" id="vi-${p.id}-${v.vid}"
+                   onclick="pickVariant(${p.id},'${v.vid}')">
+                <div class="var-dot" style="background:${v.color}"></div>
+                <span class="var-name">${v.label}</span>
+              </div>`).join('')}
+          </div>
+
+          <!-- Quantity selector (hidden until variant picked) -->
+          <div class="qty-sel" id="qs-${p.id}">
+            <div class="qty-ctrl-box">
+              <div class="qty-ctrl-row">
+                <button class="qbtn" onclick="event.stopPropagation(); varQtyChange(${p.id},-1)">−</button>
+                <span class="qnum" id="qv-${p.id}">1</span>
+                <button class="qbtn" onclick="event.stopPropagation(); varQtyChange(${p.id},1)">+</button>
+              </div>
+              <p class="qty-subtotal" id="qsub-${p.id}">${fmt(p.price)}</p>
+            </div>
+          </div>
+
+          <button class="var-add-btn" id="vab-${p.id}"
+                  onclick="addVariantToCart(${p.id})">
+            Сагсанд нэмэх →
+          </button>
+        </div>
+      </div>` : '';
+
+    return `
+      <div class="prod-card" id="pc-${p.id}"
+           onclick="${hasVars ? `toggleVars(${p.id})` : `openModal(${p.id})`}">
+        <div class="pc-img-box">
+          <img src="${p.img}" alt="${p.name}" loading="lazy">
+          <span class="pc-tag">${p.tag}</span>
+          <div class="pc-overlay">
+            <button class="pc-view">${hasVars ? 'Сонгох' : 'Дэлгэрэнгүй'}</button>
+          </div>
+        </div>
+        <div class="pc-info">
+          <p class="pc-name">${p.name}</p>
+          <p class="pc-short">${p.short}</p>
+          <div class="pc-bottom">
+            ${priceHTML}
+            ${hasVars
+              ? `<button class="pc-toggle-btn" id="ptb-${p.id}"
+                         onclick="event.stopPropagation(); toggleVars(${p.id})">
+                   Сонгох <span class="arr">↓</span>
+                 </button>`
+              : `<button class="pc-add" onclick="event.stopPropagation(); addToCart(${p.id})">+</button>`
+            }
+          </div>
+          ${varHTML}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+/* ── VARIANT TOGGLE — JS-driven height for CLS-free animation ── */
+function toggleVars(id) {
+  const wrap = $(`vars-${id}`);
+  const btn  = $(`ptb-${id}`);
+  const card = $(`pc-${id}`);
+  if (!wrap) return;
+
+  const isOpen = wrap.classList.contains('open');
+
+  // Accordion: close the previously open panel first
+  if (openVarId && openVarId !== id) {
+    closeVarPanel(openVarId);
+  }
+
+  isOpen ? closeVarPanel(id) : openVarPanel(id);
+}
+
+function openVarPanel(id) {
+  const wrap = $(`vars-${id}`);
+  const btn  = $(`ptb-${id}`);
+  const card = $(`pc-${id}`);
+  if (!wrap) return;
+  wrap.classList.add('open');
+  if (btn)  btn.classList.add('open-v');
+  if (card) card.classList.add('var-open');
+  openVarId = id;
+}
+
+function closeVarPanel(id) {
+  const wrap = $(`vars-${id}`);
+  const btn  = $(`ptb-${id}`);
+  const card = $(`pc-${id}`);
+  if (!wrap) return;
+  wrap.classList.remove('open');
+  if (btn)  btn.classList.remove('open-v');
+  if (card) card.classList.remove('var-open');
+  if (openVarId === id) openVarId = null;
+
+  // Reset all state
+  const p = products.find(x => x.id === id);
+  if (p && p.variants) {
+    p.variants.forEach(v => {
+      const el = $(`vi-${id}-${v.vid}`);
+      if (el) el.classList.remove('sel');
+    });
+  }
+  delete pickedVar[id];
+  varQty[id] = 1;
+  hideQtySel(id);
+  const qvEl = $(`qv-${id}`);
+  if (qvEl) qvEl.textContent = '1';
+  const addBtn = $(`vab-${id}`);
+  if (addBtn) { addBtn.classList.remove('ready'); addBtn.textContent = 'Сагсанд нэмэх →'; }
+}
+
+/* ── PICK A VARIANT ── */
+function pickVariant(productId, vid) {
+  const p = products.find(x => x.id === productId);
+  p.variants.forEach(v => {
+    const el = $(`vi-${productId}-${v.vid}`);
+    if (el) el.classList.remove('sel');
+  });
+  const el = $(`vi-${productId}-${vid}`);
+  if (el) el.classList.add('sel');
+  pickedVar[productId] = vid;
+
+  // Show quantity selector with height animation
+  if (!varQty[productId]) varQty[productId] = 1;
+  showQtySel(productId);
+  updateQtyDisplay(productId);
+  updateVarAddBtn(productId);
+
+  const btn = $(`vab-${productId}`);
+  if (btn) btn.classList.add('ready');
+}
+
+function showQtySel(id) {
+  const sel = $(`qs-${id}`);
+  if (sel) sel.classList.add('show');
+}
+
+function hideQtySel(id) {
+  const sel = $(`qs-${id}`);
+  if (sel) sel.classList.remove('show');
+}
+
+function varQtyChange(productId, delta) {
+  varQty[productId] = Math.max(1, (varQty[productId] || 1) + delta);
+  // Bump animation
+  const numEl = $(`qv-${productId}`);
+  if (numEl) {
+    numEl.classList.remove('bump');
+    void numEl.offsetWidth;
+    numEl.classList.add('bump');
+    numEl.textContent = varQty[productId];
+  }
+  updateQtyDisplay(productId);
+  updateVarAddBtn(productId);
+}
+
+function updateQtyDisplay(productId) {
+  const p   = products.find(x => x.id === productId);
+  const qty = varQty[productId] || 1;
+  const sub = $(`qsub-${productId}`);
+  if (!sub) return;
+  sub.innerHTML = qty > 1
+    ? `${fmt(p.price)} × ${qty} = <strong>${fmt(p.price * qty)}</strong>`
+    : fmt(p.price);
+}
+
+function updateVarAddBtn(productId) {
+  const qty = varQty[productId] || 1;
+  const btn = $(`vab-${productId}`);
+  if (!btn) return;
+  btn.textContent = qty > 1 ? `Сагсанд нэмэх • ${qty}ш` : 'Сагсанд нэмэх →';
+}
+
+/* ── ADD VARIANT TO CART ── */
+function addVariantToCart(productId) {
+  const p       = products.find(x => x.id === productId);
+  const vid     = pickedVar[productId];
+  const qty     = varQty[productId] || 1;
+  if (!vid) return;
+  const variant = p.variants.find(v => v.vid === vid);
+  const cartKey = `${productId}-${vid}`;
+  const ex = cart.find(x => x.cartKey === cartKey);
+  if (ex) ex.qty += qty;
+  else cart.push({
+    ...p,
+    cartKey,
+    displayName  : `${p.name} — ${variant.label}`,
+    selectedType : variant.label,   // e.g. "🌕 Gold Moonlight", "🦖 Green Dino"
+    qty
+  });
+  syncCart();
+  toast(`"${p.name} — ${variant.label}" × ${qty} нэмэгдлээ ✦`);
+  closeVarPanel(productId);
+}
+
+/* ── MODAL (for picks section & non-variant products) ── */
+function openModal(id) {
+  const p = products.find(x => x.id === id);
+  $('mImg').src = p.img; $('mImg').alt = p.name;
+  $('mTag').textContent = p.tag;
+  $('mName').textContent = p.name;
+  $('mPrice').innerHTML = p.originalPrice
+    ? `<span style="font-size:.9rem;color:#aaa;text-decoration:line-through;font-weight:600;">${fmt(p.originalPrice)}</span>
+       <span style="color:var(--orange)">${fmt(p.price)}</span>`
+    : fmt(p.price);
+  $('mDesc').textContent = p.desc;
+  $('mFeats').innerHTML = p.feats.map(f => `<li>${f}</li>`).join('');
+  $('mBtn').onclick = () => { addToCart(p.id); closeModal(); };
+  $('veil').classList.add('on');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() { $('veil').classList.remove('on'); document.body.style.overflow = ''; }
+function veilClick(e) { if (e.target === $('veil')) closeModal(); }
+
+/* ── CART TOGGLE ── */
+function toggleCart() {
+  const open = $('cartPanel').classList.toggle('open');
+  $('panelVeil').classList.toggle('on', open);
+  document.body.style.overflow = open ? 'hidden' : '';
+}
+
+/* ── ADD (no-variant) ── */
+function addToCart(id) {
+  const p = products.find(x => x.id === id);
+  const cartKey = String(id);
+  const ex = cart.find(x => x.cartKey === cartKey);
+  if (ex) ex.qty++;
+  else cart.push({ ...p, cartKey, displayName: p.name, selectedType: '—', qty: 1 });
+  syncCart();
+  toast(`"${p.name}" нэмэгдлээ ✦`);
+}
+
+/* ── REMOVE / QTY ── */
+function removeFromCart(cartKey) {
+  cart = cart.filter(x => x.cartKey !== cartKey);
+  syncCart();
+}
+function changeQty(cartKey, d) {
+  const item = cart.find(x => x.cartKey === cartKey);
+  if (!item) return;
+  item.qty += d;
+  if (item.qty <= 0) removeFromCart(cartKey); else syncCart();
+}
+
+/* ── SYNC CART UI ── */
+function syncCart() {
+  const total = cart.reduce((s,x) => s + x.qty, 0);
+  const sum   = cart.reduce((s,x) => s + x.price * x.qty, 0);
+  const b = $('badge');
+  b.textContent = total; b.classList.toggle('off', total === 0);
+  const body = $('cartBody'), foot = $('cartFoot');
+  if (!cart.length) {
+    body.innerHTML = '<p class="cart-empty"><span>🛍</span>Сагс хоосон байна</p>';
+    foot.style.display = 'none'; return;
+  }
+  body.innerHTML = cart.map(it => `
+    <div class="cart-item">
+      <img class="ci-img" src="${it.img}" alt="${it.displayName}">
+      <div>
+        <p class="ci-name">${it.displayName}</p>
+        <p class="ci-price">${fmt(it.price)}</p>
+        <div class="qty-row">
+          <button class="qbtn" onclick="changeQty('${it.cartKey}',-1)">−</button>
+          <span class="qnum">${it.qty}</span>
+          <button class="qbtn" onclick="changeQty('${it.cartKey}',1)">+</button>
+        </div>
+      </div>
+      <button class="ci-del" onclick="removeFromCart('${it.cartKey}')">✕</button>
+    </div>
+  `).join('');
+  $('cartSum').textContent = fmt(sum);
+  foot.style.display = 'block';
+}
+
+let tid;
+function toast(msg) {
+  $('toastMsg').textContent = msg;
+  $('toast').classList.add('on');
+  clearTimeout(tid);
+  tid = setTimeout(() => $('toast').classList.remove('on'), 2600);
+}
+
+renderPicks();
+renderGrid();
+
+/* ── CHECKOUT ── */
+const DELIVERY_FEE = 5000;
+let selDelivery = 'city';
+let selPayment  = 'qpay';
+
+function openCheckout() {
+  if (!cart.length) { toast('Сагс хоосон байна'); return; }
+  renderCoSummary();
+  updateCoTotal();
+  $('coFormWrap').classList.remove('gone');
+  $('coSuccess').classList.remove('on');
+  document.querySelectorAll('.co-field').forEach(f => f.classList.remove('err'));
+  $('coVeil').classList.add('on');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCheckout() {
+  $('coVeil').classList.remove('on');
+  document.body.style.overflow = '';
+}
+
+function coVeilClick(e) { if (e.target === $('coVeil')) closeCheckout(); }
+
+function renderCoSummary() {
+  $('coSummary').innerHTML = cart.map(it => `
+    <div class="co-ci">
+      <img class="co-ci-img" src="${it.img}" alt="${it.name}">
+      <span class="co-ci-name">${it.name}</span>
+      <span class="co-ci-qty">×${it.qty}</span>
+      <span class="co-ci-price">${fmt(it.price * it.qty)}</span>
+    </div>
+  `).join('');
+}
+
+function coChip(el, group, type) {
+  document.querySelectorAll(`#${group} .co-chip`).forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+  if (type === 'delivery') { selDelivery = el.dataset.v; updateCoTotal(); }
+  if (type === 'payment')  selPayment = el.dataset.v;
+}
+
+function updateCoTotal() {
+  const items = cart.reduce((s, x) => s + x.price * x.qty, 0);
+  const fee   = selDelivery === 'city' ? DELIVERY_FEE : 0;
+  $('coTotalPrice').textContent = fmt(items + fee);
+  $('coDelivNote').textContent  = selDelivery === 'city'
+    ? `🏙️ Хот дотор хүргэлт +${fmt(DELIVERY_FEE)} орсон`
+    : '🚚 Орон нутаг — тохиролцооны дагуу';
+}
+
+/* ── Google Sheets config ── */
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbx3ZwyOGldc9FJURvOEn7bH53XellWPA2X_BC3KlQHAiog17JQxY293lhopvhOQlYlD/exec';
+
+function generateOrderId() {
+  const randomNum = Math.floor(100000 + Math.random() * 900000);
+  return `RKT-${randomNum}`;
+}
+
+async function confirmOrder() {
+  /* 1 ── Validation */
+  const checks = [
+    { field: 'fn-name',     id: 'co-name'     },
+    { field: 'fn-phone',    id: 'co-phone'    },
+    { field: 'fn-district', id: 'co-district' },
+    { field: 'fn-address',  id: 'co-address'  },
+  ];
+  let valid = true;
+  checks.forEach(c => {
+    const field = $(c.field), input = $(c.id);
+    field.classList.remove('err');
+    if (!input.value.trim()) { field.classList.add('err'); valid = false; }
+  });
+  if (!valid) { $('coModal').scrollTo({ top: 0, behavior: 'smooth' }); return; }
+
+  /* 2 ── Build payload */
+  const orderId  = generateOrderId();
+  const fee      = selDelivery === 'city' ? DELIVERY_FEE : 0;
+  const subtotal = cart.reduce((s, x) => s + x.price * x.qty, 0);
+  const total    = subtotal + fee;
+
+  const deliveryLabel = { city: 'Хот дотор (+5,000₮)', regional: 'Орон нутаг' };
+  const paymentLabel  = { qpay: 'QPay', cash: 'Бэлнээр', bank: 'Дансаар' };
+
+  const payload = {
+    orderId,
+    name         : $('co-name').value.trim(),
+    phone        : $('co-phone').value.trim(),
+    district     : $('co-district').value,
+    address      : $('co-address').value.trim(),
+    note         : $('co-note').value.trim() || '—',
+    deliveryType : deliveryLabel[selDelivery] || selDelivery,
+    paymentType  : paymentLabel[selPayment]   || selPayment,
+    total,
+    items        : cart.map(it => ({
+      name         : it.name,
+      selectedType : it.selectedType || '—',
+      quantity     : it.qty,
+      price        : it.price
+    })),
+    /* Хүний уншихад ойлгомжтой бараа + төрлийн жагсаалт */
+    itemsSummary : cart.map(it =>
+      `${it.name}${it.selectedType && it.selectedType !== '—' ? ' / ' + it.selectedType : ''} x${it.qty}`
+    ).join(' | '),
+    variantSummary : cart.map(it =>
+      it.selectedType && it.selectedType !== '—' ? it.selectedType : '—'
+    ).join(' | '),
+    createdAt    : new Date().toLocaleString('mn-MN', { timeZone: 'Asia/Ulaanbaatar' })
+  };
+
+  /* 3 ── Loading state */
+  const btn = document.querySelector('.co-confirm');
+  btn.textContent = 'Илгээж байна...';
+  btn.disabled    = true;
+  btn.style.opacity = '.7';
+
+  /* 4 ── POST to Google Sheets (no-cors: response unreadable but data is saved) */
+  try {
+    await fetch(SHEET_URL, {
+      method  : 'POST',
+      mode    : 'no-cors',
+      headers : { 'Content-Type': 'text/plain;charset=utf-8' },
+      body    : JSON.stringify(payload)
+    });
+  } catch (err) {
+    console.warn('[RocketMN] Sheet sync warning:', err);
+  }
+
+  /* 5 ── Success screen */
+  $('sucNum').innerHTML =
+    `Захиалгын дугаар: <strong>${orderId}</strong><br>Бид тантай удахгүй холбогдох болно 🤍`;
+  $('coFormWrap').classList.add('gone');
+  $('coSuccess').classList.add('on');
+
+  /* 6 ── Restore button & clear cart */
+  btn.textContent   = 'Захиалга баталгаажуулах 🚀';
+  btn.disabled      = false;
+  btn.style.opacity = '';
+  cart = []; syncCart();
+}
+</script>
+</body>
+</html>
